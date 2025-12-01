@@ -1,0 +1,27 @@
+use std/prelude;
+
+fn solve(string[] lines, bool p2) {
+    pos := 50;
+    hits := 0;
+
+    for line in lines {
+        way := line[0];
+        step := i32::parse(line += #cast(string, 1));
+
+        for _ in 0..(p2 ? step : 1) {
+            pos = (pos + (way == 'L' ? -1 : 1) * (p2 ? 1 : step)) % 100;
+
+            if pos == 0 {
+                hits += 1;
+            }
+        }
+    }
+
+    return hits;
+}
+
+fn main(string[] args) {
+    lines := io::read_to_string(args[1]).split("\n");
+    $dbg(solve(lines, false));
+    $dbg(solve(lines, true));
+}
