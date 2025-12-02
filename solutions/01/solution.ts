@@ -49,23 +49,28 @@ type Succ<x extends number> =
       ? ParseInt<`-${TrimZeros<Rev<PrecPartial<Rev<abs>>>>}`>
       : ParseInt<TrimZeros<Rev<SuccPartial<Rev<`${x}`>>>>>;
 
-type Sub<T extends number, U extends number, acc extends number[] = []> = `${U}` extends `-${infer UAbs extends number}`
-  ? Add<T, UAbs>
-  : acc['length'] extends U
-    ? T
-    : Sub<Prec<T>, U, [...acc, 0]>;
+type Sub<T extends number, U extends number> =
+  `${U}` extends `-${infer UAbs extends number}`
+    ? Add<T, UAbs>
+    : U extends 0
+      ? T
+      : Sub<Prec<T>, Prec<U>>;
 
-type Add<T extends number, U extends number, acc extends any[] = []> = `${U}` extends `-${infer UAbs extends number}`
-  ? Sub<T, UAbs>
-  : acc['length'] extends U
-    ? T
-    : Add<Succ<T>, U, [any, ...acc]>;
+type Add<T extends number, U extends number> =
+  `${U}` extends `-${infer UAbs extends number}`
+    ? Sub<T, UAbs>
+    : U extends 0
+      ? T
+      : Add<Succ<T>, Prec<U>>;
 
-type Mul<T extends number, U extends number, Res extends number = 0, acc extends any[] = []> = acc['length'] extends U
-  ? Res
-  : Mul<T, U, `${T}` extends `-${infer TAbs extends number}`
-    ? Sub<Res, TAbs>
-    : Add<Res, T>, [any, ...acc]>;
+type Mul<T extends number, U extends number, Res extends number = 0> =
+  U extends 0
+    ? Res
+    : `${U}` extends `-${infer UAbs extends number}`
+      ? Mul<T, UAbs, Res> extends infer P extends number
+        ? Neg<P>
+        : never
+      : Mul<T, Prec<U>, Add<Res, T>>;
 
 type Mod<T extends number, U extends number> =
   U extends 0
@@ -78,15 +83,17 @@ type Mod<T extends number, U extends number> =
           ? T
           : Mod<Sub<T, U>, U>;
 
-type NextPos<pos extends number, lines extends string[], acc extends any[]> =
-  lines[acc['length']] extends `${infer head extends string}${infer tail extends number}`
-    ? Mod<Add<pos, Mul<head extends 'L' ? -1 : 1, tail>>, 100>
+type NextPos<pos extends number, lines extends string[], i extends number> =
+  lines[i] extends `${infer head}${infer tail extends number}`
+    ? Mod<Add<pos, Mul<head extends "L" ? -1 : 1, tail>>, 100>
     : never;
 
-type Solve<lines extends string[], pos extends number = 50, hits extends number = 0, acc extends number[] = []> =
-    acc['length'] extends lines['length']
-        ? hits
-        : Solve<lines, NextPos<pos, lines, acc>, NextPos<pos, lines, acc> extends 0 ? Succ<hits> : hits, [0, ...acc]>
+type Solve<lines extends string[], pos extends number = 50, hits extends number = 0, i extends number = 0> =
+  i extends lines["length"]
+    ? hits
+    : NextPos<pos, lines, i> extends infer np extends number
+        ? Solve<lines, np, np extends 0 ? Succ<hits> : hits, Succ<i>>
+        : never;
 
 // I probably don't have enough memory to use the real input
 type Out = Solve<[
@@ -99,5 +106,5 @@ type Out = Solve<[
     "L1",
     "L99",
     "R14",
-    "L82",
+    "L82"
 ]>
