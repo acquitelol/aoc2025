@@ -1,0 +1,67 @@
+use std/prelude;
+
+fn is_twice(i64 x) {
+    d := 0;
+    for t := x; t > 0; t /= 10 { d += 1; }
+    if d % 2 != 0 { return false; }
+
+    p := 1;
+    for i := 0; i < d / 2; i += 1 { p *= 10; }
+
+    return x / p == x % p;
+}
+
+fn is_repeat(i64 x) {
+    d := 0;
+    for t := x; t > 0; t /= 10 { d += 1; }
+
+    k := 1;
+    while k * 2 <= d {
+        if d % k == 0 {
+            p := 1;
+            for i := 0; i < k; i += 1 { p *= 10; }
+
+            base := x % p;
+            y := x;
+            good := true;
+
+            for count := d / k; count > 0; count -= 1 {
+                if y % p != base {
+                    good = false;
+                    break;
+                }
+                y /= p;
+            }
+
+            if good { return true; }
+        }
+
+        k += 1;
+    }
+
+    return false;
+}
+
+fn solve(string[] parts, bool p2) {
+    i64 total = 0;
+
+    for item in parts {
+        start, end := item.split("-").map(i64::parse);
+
+        while start <= end {
+            if p2 ? is_repeat(start) : is_twice(start) {
+                total += start;
+            }
+
+            start += 1;
+        }
+    }
+
+    return total;
+}
+
+fn main(string[] args) {
+    parts := io::read_to_string(args[1]).split(",");
+    $dbg(solve(parts, false));
+    $dbg(solve(parts, true));
+}
