@@ -1,8 +1,7 @@
 use std/prelude;
 
 fn is_twice(i64 x) {
-    d := 0;
-    for t := x; t > 0; t /= 10 { d += 1; }
+    d := 1 + #cast(i64, math::floorf(math::log10f(x)));
     if d % 2 != 0 { return false; }
 
     p := 1;
@@ -12,10 +11,9 @@ fn is_twice(i64 x) {
 }
 
 fn is_repeat(i64 x) {
-    d := 0;
-    for t := x; t > 0; t /= 10 { d += 1; }
-
+    d := 1 + #cast(i64, math::floorf(math::log10f(x)));
     k := 1;
+
     while k * 2 <= d {
         if d % k == 0 {
             p := 1;
