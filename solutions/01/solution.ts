@@ -1,3 +1,5 @@
+type Neg<x extends number> = Sub<0, x>;
+
 type IsNegative<N extends number> =
   `${N}` extends `-${string}`
     ? true
@@ -94,6 +96,7 @@ type Solve<lines extends string[], pos extends number = 50, hits extends number 
     : NextPos<pos, lines, i> extends infer np extends number
         ? Solve<lines, np, np extends 0 ? Succ<hits> : hits, Succ<i>>
         : never;
+
 
 // I probably don't have enough memory to use the real input
 type Out = Solve<[
