@@ -14,7 +14,7 @@ solutions/$(DAY)/solution: solutions/$(DAY)/solution.le
 	@ellec solutions/$(DAY)/solution.le -o solutions/$(DAY)/solution -z -O3
 
 time:
-	hyperfine --warmup 3 'solutions/$(DAY)/solution solutions/$(DAY)/input.txt' 'pypy3 $(DAY)/solution.py $(DAY)/input.txt'
+	hyperfine --warmup 3 'solutions/$(DAY)/solution solutions/$(DAY)/input.txt' -i
 
 .PHONY: clean
 clean:
