@@ -78,13 +78,10 @@ type Mod<T extends number, U extends number> =
           ? T
           : Mod<Sub<T, U>, U>;
 
-type NextPos<pos extends number, lines extends string[], acc extends any[]> = Mod<Add<pos, Mul<
-  lines[acc['length']] extends `${infer head extends string}${infer _}`
-      ? head extends 'L' ? -1 : 1
-      : never,
-  lines[acc['length']] extends `${infer _}${infer tail extends number}`
-      ? tail
-      : never>>, 100>;
+type NextPos<pos extends number, lines extends string[], acc extends any[]> =
+  lines[acc['length']] extends `${infer head extends string}${infer tail extends number}`
+    ? Mod<Add<pos, Mul<head extends 'L' ? -1 : 1, tail>>, 100>
+    : never;
 
 type Solve<lines extends string[], pos extends number = 50, hits extends number = 0, acc extends number[] = []> =
     acc['length'] extends lines['length']
