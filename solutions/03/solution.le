@@ -1,0 +1,41 @@
+use std/prelude;
+
+fn best_n(u64 n, string line) {
+    drop := line.len() - n;
+    out := []char;
+
+    for c in line {
+        while drop > 0 && !out.is_empty() && out.last().unwrap() < c {
+            out.pop();
+            drop -= 1;
+        }
+
+        out.push(c);
+    }
+
+    if drop > 0 {
+        out.size -= drop;
+    }
+
+    return i64::parse(out.join(""));
+}
+
+fn solve(string[] lines, bool p2) {
+    u64 total = 0;
+
+    for line in lines {
+        if line.is_empty() || line.len() < 2 {
+            continue;
+        }
+
+        total += best_n(p2 ? 12 : 2, line);
+    }
+
+    return total;
+}
+
+fn main(string[] args) {
+    lines := io::read_to_string(args[1]).split("\n");
+    $dbg(solve(lines, false));
+    $dbg(solve(lines, true));
+}

@@ -1,6 +1,8 @@
 DAY ?= 01
 INPUT ?= sample.txt
 
+default: day
+
 all:
 	@$(foreach file, $(shell find solutions -mindepth 1 -type d -exec basename {} \; | sort -n), \
 		echo "Day $(file)"; \
