@@ -1,0 +1,68 @@
+use std/prelude;
+
+fn solve(string[] grid) {
+    n := (0..grid.len())
+        .map_with(fn(_, grid) (0..grid[0].len()).map(fn() 0).collect(), grid)
+        .collect();
+    parts := #[0, 0];
+
+    for y in 0..grid.len() {
+        for x in 0..grid[0].len() {
+            if grid[y][x] != '@' { continue; }
+            a := 0;
+
+            for dy := -1; dy < 2; dy += 1 {
+                for dx := -1; dx < 2; dx += 1 {
+                    if dx == 0 && dy == 0 { continue; }
+                    ny := y + dy;
+                    nx := x + dx;
+
+                    if 0 <= ny && ny < grid.len() && 0 <= nx && nx < grid[0].len() && grid[ny][nx] == '@' {
+                        a += 1;
+                    }
+                }
+            }
+
+            n[y][x] = a;
+        }
+    }
+
+    dq := Deque::new<(i32, i32)>();
+
+    for y := 0; y < grid.len(); y += 1 {
+        for x := 0; x < grid[0].len(); x += 1 {
+            if grid[y][x] == '@' && n[y][x] < 4 {
+                dq.push_back($(y, x));
+                parts[0] += 1;
+            }
+        }
+    }
+
+    while !dq.is_empty() {
+        y, x := dq.pop_front().unwrap();
+        if grid[y][x] != '@' || n[y][x] >= 4 { continue; }
+
+        grid[y][x] = '.';
+        parts[1] += 1;
+
+        for dy := -1; dy < 2; dy += 1 {
+            for dx := -1; dx < 2; dx += 1 {
+                if dx == 0 && dy == 0 { continue; }
+                ny := y + dy;
+                nx := x + dx;
+
+                if 0 <= ny && ny < grid.len() && 0 <= nx && nx < grid[0].len() && grid[ny][nx] == '@' {
+                    n[ny][nx] -= 1;
+                    if n[ny][nx] == 3 { dq.push_back($(ny, nx)); }
+                }
+            }
+        }
+    }
+
+    return parts;
+}
+
+fn main(string[] args) {
+    grid := io::read_to_string(args[1]).split("\n");
+    $dbg(solve(grid));
+}
