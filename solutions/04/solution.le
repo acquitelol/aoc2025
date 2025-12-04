@@ -1,13 +1,16 @@
 use std/prelude;
 
+const pack = fn(u8 a, u8 b) a << 8 | b;
+const unpack = fn(u16 p) $(p >> 8, p & 0xff);
+
 fn solve(string[] grid) {
-    n := (0..grid.len())
-        .map_with(fn(_, grid) (0..grid[0].len()).map(fn() 0).collect(), grid)
-        .collect();
+    r, c := $(grid.len(), grid[0].len());
+    dq := Deque::new<u16>();
+    n := #alloca(u8, r * c);
     parts := #[0, 0];
 
-    for y in 0..grid.len() {
-        for x in 0..grid[0].len() {
+    for y := 0; y < r; y += 1 {
+        for x := 0; x < c; x += 1 {
             if grid[y][x] != '@' { continue; }
             a := 0;
 
@@ -17,30 +20,24 @@ fn solve(string[] grid) {
                     ny := y + dy;
                     nx := x + dx;
 
-                    if 0 <= ny && ny < grid.len() && 0 <= nx && nx < grid[0].len() && grid[ny][nx] == '@' {
+                    if 0 <= ny && ny < r && 0 <= nx && nx < c && grid[ny][nx] == '@' {
                         a += 1;
                     }
                 }
             }
 
-            n[y][x] = a;
-        }
-    }
+            n[y * c + x] = a;
 
-    dq := Deque::new<(i32, i32)>();
-
-    for y := 0; y < grid.len(); y += 1 {
-        for x := 0; x < grid[0].len(); x += 1 {
-            if grid[y][x] == '@' && n[y][x] < 4 {
-                dq.push_back($(y, x));
+            if a < 4 {
+                dq.push_back(pack(y, x));
                 parts[0] += 1;
             }
         }
     }
 
     while !dq.is_empty() {
-        y, x := dq.pop_front().unwrap();
-        if grid[y][x] != '@' || n[y][x] >= 4 { continue; }
+        y, x := unpack(dq.pop_front().unwrap());
+        if grid[y][x] != '@' || n[y * c + x] >= 4 { continue; }
 
         grid[y][x] = '.';
         parts[1] += 1;
@@ -51,9 +48,9 @@ fn solve(string[] grid) {
                 ny := y + dy;
                 nx := x + dx;
 
-                if 0 <= ny && ny < grid.len() && 0 <= nx && nx < grid[0].len() && grid[ny][nx] == '@' {
-                    n[ny][nx] -= 1;
-                    if n[ny][nx] == 3 { dq.push_back($(ny, nx)); }
+                if 0 <= ny && ny < r && 0 <= nx && nx < c && grid[ny][nx] == '@' {
+                    n[ny * c + nx] -= 1;
+                    if n[ny * c + nx] == 3 { dq.push_back(pack(ny, nx)); }
                 }
             }
         }
