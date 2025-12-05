@@ -1,0 +1,55 @@
+use std/prelude;
+
+fn Array::unsorted(i64[2][] self, i64 low, i64 high) {
+    i := 0;
+
+    while i < self.len() {
+        a, b := self[i];
+
+        if b >= low - 1 && a <= high + 1 {
+            if a < low { low = a; }
+            if b > high { high = b; }
+            self.remove(i);
+            continue;
+        }
+
+        i += 1;
+    }
+
+    self.push(#[low, high]);
+}
+
+fn solve(string[] lines, bool p2) {
+    split := lines.iter().position(fn(l) l == "").unwrap();
+    ranges := lines.slice(0, split).map(fn(line) line.split("-").map(i64::parse));
+    i64 total = 0;
+
+    if p2 {
+        merged := []i64[2];
+
+        for low, high in ranges {
+            merged.unsorted(low, high);
+        }
+
+        total = merged.map(fn(x) x[1] - x[0] + 1).sum();
+    } else {
+        ids := lines.slice(split + 1, lines.len()).map(i64::parse);
+
+        for id in ids {
+            for low, high in ranges {
+                if low <= id && id <= high {
+                    total += 1;
+                    break;
+                }
+            }
+        }
+    }
+
+    return total;
+}
+
+fn main(string[] args) {
+    lines := io::read_to_string(args[1]).split("\n");
+    $dbg(solve(lines, false));
+    $dbg(solve(lines, true));
+}
