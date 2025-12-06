@@ -1,0 +1,55 @@
+use std/prelude;
+
+let grid: string[];
+let width: u64;
+
+fn evaluate((i64, i64)[] ranges) {
+    i64[2] total = #[0, 0];
+
+    for start, end in ranges {
+        nums := #[[]i64, []i64];
+
+        for r in 0..grid.len() - 1 {
+            part := grid[r].slice(start, end).strip();
+            if !part.is_empty() { nums[0].push(i64::parse(part)); }
+        }
+
+        for c in (start..end).rev() {
+            digits := []char;
+            for r in 0..grid.len() - 1 {
+                if grid[r][c] != ' ' { digits.push(grid[r][c]); }
+            }
+
+            if !digits.is_empty() { nums[1].push(i64::parse(digits.join(""))); }
+        }
+
+        op := grid.last().unwrap().slice(start, end).strip();
+
+        for i in 0..total.len() {
+            if nums[i].is_empty() { continue; }
+            total[i] += op == "+" ? nums[i].sum() : nums[i].product();
+        }
+    }
+
+    return total;
+}
+
+fn solve(string[] lines) {
+    sep := (0..width).map(fn(c) grid.iter().all_with(fn(r, c) r[c] == ' ', c)).collect();
+    ranges := [](i64, i64);
+
+    for i64 c = 0; c < width; {
+        start := c += sep[c];
+        while c < width && !sep[c] { c += 1; }
+        ranges.push($(start, c));
+    }
+
+    return evaluate(ranges);
+}
+
+fn main(string[] args) {
+    lines := io::read_to_string(args[1]).split("\n");
+    width = lines.iter().map(fn(l) l.len()).max().unwrap();
+    grid = lines.map(fn(l) l.justify_left(width));
+    $dbg(solve(lines));
+}
