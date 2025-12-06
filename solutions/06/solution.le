@@ -22,7 +22,7 @@ fn solve(string[] lines) {
             if !part.is_empty() { nums[0].push(i64::parse(part)); }
         }
 
-        for c in (start..end).rev() {
+        for c in start..end {
             digits := []char;
             for r in 0..grid.len() - 1 {
                 if grid[r][c] != ' ' { digits.push(grid[r][c]); }
