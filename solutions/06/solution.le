@@ -3,8 +3,16 @@ use std/prelude;
 let grid: string[];
 let width: u64;
 
-fn evaluate((i64, i64)[] ranges) {
+fn solve(string[] lines) {
+    sep := (0..width).map(fn(c) grid.iter().all_with(fn(r, c) r[c] == ' ', c)).collect();
+    ranges := [](i64, i64);
     i64[2] total = #[0, 0];
+
+    for i64 c = 0; c < width; {
+        start := c += sep[c];
+        while c < width && !sep[c] { c += 1; }
+        ranges.push($(start, c));
+    }
 
     for start, end in ranges {
         nums := #[[]i64, []i64];
@@ -34,22 +42,9 @@ fn evaluate((i64, i64)[] ranges) {
     return total;
 }
 
-fn solve(string[] lines) {
-    sep := (0..width).map(fn(c) grid.iter().all_with(fn(r, c) r[c] == ' ', c)).collect();
-    ranges := [](i64, i64);
-
-    for i64 c = 0; c < width; {
-        start := c += sep[c];
-        while c < width && !sep[c] { c += 1; }
-        ranges.push($(start, c));
-    }
-
-    return evaluate(ranges);
-}
-
 fn main(string[] args) {
     lines := io::read_to_string(args[1]).split("\n");
     width = lines.iter().map(fn(l) l.len()).max().unwrap();
-    grid = lines.map(fn(l) l.justify_left(width));
+    grid = lines.map(fn(l) l.pad_left(width));
     $dbg(solve(lines));
 }
