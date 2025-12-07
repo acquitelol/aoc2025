@@ -1,0 +1,36 @@
+use std/prelude;
+
+fn solve(string[] grid) {
+    i64 sc = grid[0].iter().position(fn(c) c == 'S').unwrap();
+    i64 splits = 0;
+
+    beams := HashSet::with_entries(sc);
+    ways := HashMap::with_entries<i64, i64>($(sc, 1));
+
+    for r in 1..grid.len() {
+        nb := HashSet::new<i64>();
+        nw := HashMap::new<i64, i64>();
+
+        for c in beams.iter() {
+            count := ways.get(c).unwrap_or(0);
+            cell := grid[r][c];
+
+            if cell == '^' { splits += 1; }
+            for nc in cell == '^' ? [c - 1, c + 1] : [c] {
+                if 0 <= nc && nc < grid[0].len() {
+                    nb.add(nc);
+                    nw[nc] = nw.get(nc).unwrap_or(0) + count;
+                }
+            }
+        }
+
+        beams, ways = $(nb, nw);
+    }
+
+    return #[splits, ways.values().sum()];
+}
+
+fn main(string[] args) {
+    grid := io::read_to_string(args[1]).split("\n");
+    $dbg(solve(grid));
+}
