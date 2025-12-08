@@ -1,0 +1,57 @@
+use std/prelude;
+
+fn merge(i64[] circuits, i64 d1, i64 d2) {
+    c1, c2 := $(circuits[d1], circuits[d2]);
+    if c1 == c2 { return; }
+    for i, c in circuits.iter().enumerate() {
+        if c == c2 { circuits[i] = c1; }
+    }
+}
+
+fn solve(string[] lines) {
+    boxes := lines.map(fn(l) l.split(",").map(i64::parse));
+    circuits := (#cast(i64, 0)..boxes.len()).collect();
+    i64[2] total = #[0, 0];
+
+    dists := [](f32, u64, u64);
+    bdist := f32::inf;
+
+    for i, box1 in boxes.iter().enumerate() {
+        for j, box2 in boxes.iter().enumerate() {
+            if i >= j { continue; }
+            dist := box1.to_vec3().sub(box2.to_vec3()).length_sq();
+
+            if dist < bdist { bdist = dist; }
+            else if dist > bdist * 400 { continue; }
+
+            dists.push($$(dist, i, j));
+        }
+    }
+
+    dists.sort_with(fn(a, b) #cast(i64, a.x - b.x));
+
+    for i, d in dists.iter().enumerate() {
+        dist, d1, d2 := d;
+        merge(circuits, d1, d2);
+
+        if i == 999 {
+            counts := HashMap::new<i64, i64>();
+            for c in circuits { counts[c] = counts.get(c).unwrap_or(0) + 1; }
+
+            largest := counts.iter().collect().sort_with(fn(a, b) b.y - a.y).slice(0, 3);
+            total[0] = largest.iter().map(fn(c) c.y).product();
+        }
+
+        if HashSet::from(circuits).size() == 1 {
+            total[1] = boxes[d1][0] * boxes[d2][0];
+            break;
+        }
+    }
+
+    return total;
+}
+
+fn main(string[] args) {
+    lines := io::read_to_string(args[1]).split("\n");
+    $dbg(solve(lines));
+}
