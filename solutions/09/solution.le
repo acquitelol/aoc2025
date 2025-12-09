@@ -1,123 +1,41 @@
 use std/prelude;
 
-fn point_on_seg(f64 px, f64 py, f64 x1, f64 y1, f64 x2, f64 y2) {
-    if math::abs(x2 - x1) < 1.0e-12 && math::abs(y2 - y1) < 1.0e-12 {
-        return math::abs(px - x1) < 1.0e-12 && math::abs(py - y1) < 1.0e-12;
-    }
-
-    if px < math::min(x1, x2) - 1.0e-12
-        || px > math::max(x1, x2) + 1.0e-12
-        || py < math::min(y1, y2) - 1.0e-12
-        || py > math::max(y1, y2) + 1.0e-12
-    {
-        return false;
-    }
-
-    return math::abs((x2 - x1) * (py - y1) - (y2 - y1) * (px - x1)) < 1.0e-9;
-}
-
-fn point_on_poly(f64 px, f64 py, f64[][] poly) {
-    for i := 0; i < poly.len(); i += 1 {
-        x1, y1 := poly[i];
-        x2, y2 := poly[(i + 1) % poly.len()];
-        if point_on_seg(px, py, x1, y1, x2, y2) {
-            return true;
+fn contained((i64[2], i64[2])[] edges, (i64, i64) mx, (i64, i64) my) {
+    for i := 0; i < edges.len(); i += 1 {
+        e := edges[i];
+        if mx.x < e.y[0] && mx.y > e.x[0] && my.x < e.y[1] && my.y > e.x[1] {
+            return false;
         }
     }
 
-    inside := false;
-    for i := 0; i < poly.len(); i += 1 {
-        x1, y1 := poly[i];
-        x2, y2 := poly[(i + 1) % poly.len()];
-        if (y1 > py) != (y2 > py) {
-            x_in := x1 + (py - y1) * (x2 - x1) / (y2 - y1);
-            if x_in > px {
-                inside = !inside;
-            }
-        }
-    }
-
-    return inside;
-}
-
-fn passes(f64[] p1, f64[] p2, f64 xl, f64 xr, f64 yt, f64 yb) {
-    x1, y1 := p1;
-    x2, y2 := p2;
-
-    if math::abs(y1 - y2) < 1.0e-12 {
-        if y1 > yt && y1 < yb {
-            a, b := $(math::min(x1, x2), math::max(x1, x2));
-            if b > xl && a < xr {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    if math::abs(x1 - x2) < 1.0e-12 {
-        if x1 > xl && x1 < xr {
-            a, b := $(math::min(y1, y2), math::max(y1, y2));
-            if b > yt && a < yb {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    mx, my := $((x1 + x2) / 2, (y1 + y2) / 2);
-    return mx > xl && mx < xr && my > yt && my < yb;
+    return true;
 }
 
 fn solve(string[] lines) {
-    reds := lines.map(fn(l) l.split(",").map(f64::parse));
-    poly := reds.map(fn(p) p.map(fn(n) n + 0.5));
+    tiles := lines.map(fn(l) l.split(",").map(i64::parse));
+    edges := [](i64[2], i64[2]);
     i64[2] best = #[0, 0];
 
-    edges := [](f64[], f64[]);
-    for i in 0..poly.len() {
-        edges.push($(poly[i], poly[(i + 1) % poly.len()]));
+    for i := 0; i < tiles.len(); i += 1 {
+        p := #[tiles[i], tiles[(i + 1) % tiles.len()]];
+
+        edges.push($(
+            #[math::min(p[0][0], p[1][0]), math::min(p[0][1], p[1][1])],
+            #[math::max(p[0][0], p[1][0]), math::max(p[0][1], p[1][1])]
+        ));
     }
 
-    for i := 0; i < reds.len(); i += 1 {
-        x1, y1 := reds[i];
-
-        for j := i + 1; j < reds.len(); j += 1 {
-            x2, y2 := reds[j];
-
-            xl, xr := $(math::min(x1, x2), math::max(x1, x2));
-            yt, yb := $(math::min(y1, y2), math::max(y1, y2));
-            area := (xr - xl + 1) * (yb - yt + 1);
+    for i := 0; i < tiles.len(); i += 1 {
+        for j := i; j < tiles.len(); j += 1 {
+            if i >= j { continue; }
+            p1, p2 := $(tiles[i], tiles[j]);
+            area := (math::abs(p1[0] - p2[0]) + 1) * (math::abs(p1[1] - p2[1]) + 1);
             if area > best[0] { best[0] = area; }
+            if area <= best[1] { continue; }
 
-            xl, xr := $(xl + 0.5, xr + 0.5);
-            yt, yb := $(yt + 0.5, yb + 0.5);
-
-            corners := #[$(xl, yt), $(xl, yb), $(xr, yt), $(xr, yb)];
-            ok := true;
-
-            for i := 0; i < corners.len(); i += 1 {
-                cx, cy := corners[i];
-
-                if !point_on_poly(cx, cy, poly) {
-                    ok = false;
-                    break;
-                }
-            }
-
-            if !ok { continue; }
-
-            blocked := false;
-            for i := 0; i < edges.len(); i += 1 {
-                p1, p2 := edges[i] ;
-                if passes(p1, p2, xl, xr, yt, yb) {
-                    blocked = true;
-                    break;
-                }
-            }
-
-            if !blocked && area > best[1] { best[1] = area; }
+            mx := p1[0] < p2[0] ? $(p1[0], p2[0]) : $(p2[0], p1[0]);
+            my := p1[1] < p2[1] ? $(p1[1], p2[1]) : $(p2[1], p1[1]);
+            if contained(edges, mx, my) { best[1] = area; }
         }
     }
 
