@@ -1,9 +1,9 @@
 use std/prelude;
 
-fn contained((i64[2], i64[2])[] edges, (i64, i64) mx, (i64, i64) my) {
+fn contained(i64[4][] edges, i64[2] mx, i64[2] my) {
     for i := 0; i < edges.len(); i += 1 {
-        e := edges[i];
-        if mx.x < e.y[0] && mx.y > e.x[0] && my.x < e.y[1] && my.y > e.x[1] {
+        e := edges.elements[i]; // skip bounds check
+        if mx[0] < e[2] && mx[1] > e[0] && my[0] < e[3] && my[1] > e[1] {
             return false;
         }
     }
@@ -13,28 +13,30 @@ fn contained((i64[2], i64[2])[] edges, (i64, i64) mx, (i64, i64) my) {
 
 fn solve(string[] lines) {
     tiles := lines.map(fn(l) l.split(",").map(i64::parse));
-    edges := [](i64[2], i64[2]);
+    edges := Array::with_capacity<i64[4]>(tiles.len()).filled();
     i64[2] best = #[0, 0];
 
     for i := 0; i < tiles.len(); i += 1 {
-        p := #[tiles[i], tiles[(i + 1) % tiles.len()]];
-
-        edges.push($(
-            #[math::min(p[0][0], p[1][0]), math::min(p[0][1], p[1][1])],
-            #[math::max(p[0][0], p[1][0]), math::max(p[0][1], p[1][1])]
-        ));
+        px, py := #[tiles[i], tiles[(i + 1) % tiles.len()]];
+        edges[i] = #[
+            math::min(px[0], py[0]), math::min(px[1], py[1]),
+            math::max(px[0], py[0]), math::max(px[1], py[1])
+        ];
     }
 
+    edges.sort_with(fn(a, b) a[0] - b[0]);
+
     for i := 0; i < tiles.len(); i += 1 {
-        for j := i; j < tiles.len(); j += 1 {
+        for j := 0; j < tiles.len(); j += 1 {
             if i >= j { continue; }
-            p1, p2 := $(tiles[i], tiles[j]);
-            area := (math::abs(p1[0] - p2[0]) + 1) * (math::abs(p1[1] - p2[1]) + 1);
+            p1, p2 := #[tiles[i], tiles[j]];
+
+            mx := p1[0] < p2[0] ? #[p1[0], p2[0]] : #[p2[0], p1[0]];
+            my := p1[1] < p2[1] ? #[p1[1], p2[1]] : #[p2[1], p1[1]];
+            area := (mx[1] - mx[0] + 1) * (my[1] - my[0] + 1);
+
             if area > best[0] { best[0] = area; }
             if area <= best[1] { continue; }
-
-            mx := p1[0] < p2[0] ? $(p1[0], p2[0]) : $(p2[0], p1[0]);
-            my := p1[1] < p2[1] ? $(p1[1], p2[1]) : $(p2[1], p1[1]);
             if contained(edges, mx, my) { best[1] = area; }
         }
     }
