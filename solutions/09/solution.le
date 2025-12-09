@@ -43,6 +43,6 @@ fn solve(string[] lines) {
 }
 
 fn main(string[] args) {
-    lines := io::read_to_string(args[1]).split("\n");
+    lines := io::read_to_string(args[1]).strip().split("\n");
     $dbg(solve(lines));
 }
