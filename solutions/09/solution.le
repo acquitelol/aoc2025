@@ -1,7 +1,7 @@
 use std/prelude;
 
 fn contained(i64[4][] edges, i64[2] mx, i64[2] my) {
-    for i := 0; i < edges.len(); i += 1 {
+    for i := 0; i < edges.size; i += 1 {
         e := edges.elements[i]; // skip bounds check
         if mx[0] < e[2] && mx[1] > e[0] && my[0] < e[3] && my[1] > e[1] {
             return false;
@@ -29,7 +29,7 @@ fn solve(string[] lines) {
     for i := 0; i < tiles.len(); i += 1 {
         for j := 0; j < tiles.len(); j += 1 {
             if i >= j { continue; }
-            p1, p2 := #[tiles[i], tiles[j]];
+            p1, p2 := #[tiles.elements[i], tiles.elements[j]];
 
             mx := p1[0] < p2[0] ? #[p1[0], p2[0]] : #[p2[0], p1[0]];
             my := p1[1] < p2[1] ? #[p1[1], p2[1]] : #[p2[1], p1[1]];
