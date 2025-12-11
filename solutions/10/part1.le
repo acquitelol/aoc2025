@@ -1,0 +1,28 @@
+use std/prelude;
+global pub;
+
+fn min_lights(i32 lights, i32[] buttons, i32 target) {
+    start := 0;
+    queue := Deque::new<(i32, i32)>();
+    queue.push_back($(start, 0));
+
+    visited := #alloca(bool, 1 << lights);
+    mem::memset(visited, 0, 1 << lights);
+    visited[start] = true;
+
+    while _, res := queue.pop_front() {
+        state, presses := res;
+        if state == target { return presses; }
+
+        for mask in buttons {
+            new_state := state ^ mask;
+
+            if !visited[new_state] {
+                visited[new_state] = true;
+                queue.push_back($(new_state, presses + 1));
+            }
+        }
+    }
+
+    return i32::max();
+}

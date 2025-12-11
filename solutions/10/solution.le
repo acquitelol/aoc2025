@@ -1,0 +1,63 @@
+use std/prelude;
+
+use part1;
+use part2;
+
+fn solve(string[] lines) {
+    i32[2] total = #[0, 0];
+
+    for i, line in lines.iter().enumerate() {
+        diagram, rest := line.split("]");
+        diagram += #cast(string, 1);
+
+        parts := rest.split(")");
+        buttons := []i32[];
+        masks := []i32;
+
+        for button in parts.slice(0, -1) {
+            button := button.strip().slice(1, button.strip().len()).split(",").map(i32::parse);
+            mask := 0;
+            for i in button { mask |= 1 << i; }
+            buttons.push(button);
+            masks.push(mask);
+        }
+
+        c := parts[-1].strip();
+        counters := c.slice(1, c.len() - 1).split(",").map(i32::parse);
+        target := 0;
+
+        for i, c in diagram.iter().enumerate() {
+            if c == '#' { target |= (1 << i); }
+        }
+
+        total[0] += min_lights(diagram.len(), masks, target);
+        tableau := []f32[];
+
+        for j := 0; j < 2 * counters.len(); j += 1 {
+            tableau.push((0..buttons.len() + 1).map(fn() 0.0).collect());
+        }
+
+        for i, count in counters.iter().enumerate() {
+            for j, button in buttons.iter().enumerate() {
+                if button.contains(i) {
+                    tableau[i][j] = 1.0;
+                    tableau[i + counters.len()][j] = -1.0;
+                }
+            }
+
+            tableau[i][-1] = #cast(f32, count);
+            tableau[i + counters.len()][-1] = #cast(f32, -count);
+        }
+
+        best := f32::inf;
+        branch(tableau, &best, tableau[0].len() - 1);
+        total[1] += math::roundf(best);
+    }
+
+    return total;
+}
+
+fn main(string[] args) {
+    lines := io::read_to_string(args[1]).split("\n");
+    $dbg(solve(lines));
+}
