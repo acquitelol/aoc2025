@@ -1,11 +1,11 @@
 use std/prelude;
 
 let cache = HashMap::new<(string, string), i64>();
-let graph = HashMap::new<string, HashSet<string> *>();
+let graph = DefaultMap::new<string>(fn() HashSet::new<string>());
 
 fn dp(string start, string end) -> i64 {
     if start == end { return 0; }
-    if graph.get_or_insert(start, HashSet::new<string>()).contains(end) { return 1; }
+    if graph[start].contains(end) { return 1; }
     if _, res := cache.get($(start, end)) { return res; }
 
     res := graph[start].iter().map_with(dp, end).sum();
@@ -16,10 +16,7 @@ fn dp(string start, string end) -> i64 {
 fn solve(string[] lines) {
     for line in lines {
         name, rest := line.split(": ").map(string::strip);
-        graph.get_or_insert(name, HashSet::new<string>());
-        for d in rest.split(" ") {
-            graph[name].add(d);
-        }
+        for d in rest.split(" ") { graph[name].add(d); }
     }
 
     i64[2] total = #[0, 0];
