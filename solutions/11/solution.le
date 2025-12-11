@@ -4,7 +4,6 @@ let cache = HashMap::new<(string, string), i64>();
 let graph = DefaultMap::new<string>(fn() HashSet::new<string>());
 
 fn dp(string start, string end) -> i64 {
-    if start == end { return 0; }
     if graph[start].contains(end) { return 1; }
     if _, res := cache.get($(start, end)) { return res; }
 
@@ -15,7 +14,7 @@ fn dp(string start, string end) -> i64 {
 
 fn solve(string[] lines) {
     for line in lines {
-        name, rest := line.split(": ").map(string::strip);
+        name, rest := line.split(":").map(string::strip);
         for d in rest.split(" ") { graph[name].add(d); }
     }
 
