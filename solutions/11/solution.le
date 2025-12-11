@@ -8,7 +8,7 @@ fn dp(string start, string end) -> i64 {
     if graph.get_or_insert(start, HashSet::new<string>()).contains(end) { return 1; }
     if _, res := cache.get($(start, end)) { return res; }
 
-    res := graph[start].iter().map_with(fn(x, end) dp(x, end), end).sum();
+    res := graph[start].iter().map_with(dp, end).sum();
     cache[$(start, end)] = res;
     return res;
 }
@@ -25,11 +25,8 @@ fn solve(string[] lines) {
     i64[2] total = #[0, 0];
     total[0] = dp("you", "out");
 
-    for dac, fft in ["dac", "fft"].permutations() {
-        a := dp("svr", dac);
-        b := dp(dac, fft);
-        c := dp(fft, "out");
-        total[1] += a * b * c;
+    for a, b in ["dac", "fft"].permutations() {
+        total[1] += dp("svr", a) * dp(a, b) * dp(b, "out");
     }
 
     return total;
