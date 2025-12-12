@@ -1,0 +1,18 @@
+use std/prelude;
+
+fn solve(string[] blocks) {
+    sizes := blocks.slice(0, 6).iter().map(fn(b) b.iter().map(fn(c) c == '#').sum()).collect();
+    total := 0;
+
+    for part in blocks[6].nums<i32>().iter().chunks(8) {
+        area := part.remove(0).unwrap() * part.remove(0).unwrap();
+        total += area > sizes.iter().zip(part.iter()).map(fn(p) p.x * p.y).sum();
+    }
+
+    return total;
+}
+
+fn main(string[] args) {
+    blocks := io::read_to_string(args[1]).split("\n\n");
+    $dbg(solve(blocks));
+}
