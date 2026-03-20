@@ -1,7 +1,7 @@
 use std/prelude;
 
-const pack = fn(u8 a, u8 b) a << 8 | b;
-const unpack = fn(u16 p) $(p >> 8, p & 0xff);
+let pack = fn(u8 a, u8 b) a << 8 | b;
+let unpack = fn(u16 p) $(p >> 8, p & 0xff);
 
 fn solve(string[] grid) {
     r, c := $(grid.len(), grid[0].len());

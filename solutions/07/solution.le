@@ -3,7 +3,7 @@ use std/prelude;
 fn solve(string[] grid) {
     i64 sc = grid[0].iter().position(fn(c) c == 'S').unwrap();
     i64 splits = 0;
-    ways := HashMap::with_entries<i64, i64>($(sc, 1));
+    ways := $map(#[$(sc, #cast(i64, 1))]);
 
     for r in 1..grid.len() {
         next := HashMap::new<i64, i64>();
