@@ -13,7 +13,7 @@ day: solutions/$(DAY)/solution
 	@solutions/$(DAY)/solution solutions/$(DAY)/$(INPUT)
 
 solutions/$(DAY)/solution: solutions/$(DAY)/solution.le
-	@ellec solutions/$(DAY)/solution.le -o solutions/$(DAY)/solution -z -O3 --nogc --silent -r
+	@ellec solutions/$(DAY)/solution.le -o solutions/$(DAY)/solution -z -O3 --silent -r
 
 time:
 	hyperfine --warmup 100 'solutions/$(DAY)/solution solutions/$(DAY)/input.txt' -i -N
