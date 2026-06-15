@@ -4,16 +4,14 @@ fn solve(string[] lines, bool p2) {
     pos := 50;
     hits := 0;
 
-    for line in lines {
-        way := line[0];
-        step := i32::parse(line += #cast(string, 1));
+    for line in lines.map(string::iter) {
+        way := line.next().unwrap();
+        step := i32::parse(line.collect().join(""));
 
         for _ in 0..(p2 ? step : 1) {
-            pos = (pos + (way == 'L' ? -1 : 1) * (p2 ? 1 : step)) % 100;
-
-            if pos == 0 {
-                hits += 1;
-            }
+            pos += (way == 'L' ? -1 : 1) * (p2 ? 1 : step);
+            pos %= 100;
+            if pos == 0 { hits += 1; }
         }
     }
 

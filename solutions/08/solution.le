@@ -20,7 +20,7 @@ fn solve(string[] lines) {
     circuits := (#cast(i64, 0)..boxes.len()).collect();
     i64[2] total = #[0, 0];
 
-    dists := MinHeap::new<(f32, u64, u64)>(fn(a, b) #cast(i64, a.x - b.x));
+    dists := MinHeap::new<(f32, u64, u64)>(fn(a, b) a.x - b.x);
     bdist := f32::inf;
 
     for i, box1 in boxes.iter().enumerate() {

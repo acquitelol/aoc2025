@@ -1,57 +1,50 @@
 use std/prelude;
 
-let pack = fn(u8 a, u8 b) a << 8 | b;
-let unpack = fn(u16 p) $(p >> 8, p & 0xff);
-
 fn solve(string[] grid) {
     r, c := $(grid.len(), grid[0].len());
-    dq := Deque::new<u16>();
+    dq := Deque::new<(i32, i32)>();
     n := #alloca(u8, r * c);
     parts := #[0, 0];
 
-    for y := 0; y < r; y += 1 {
-        for x := 0; x < c; x += 1 {
-            if grid[y][x] != '@' { continue; }
-            a := 0;
+    for y, x in (0..r).cartesian_product(0..c) {
+        if grid[y][x] != '@' { continue; }
+        a := 0;
 
-            for dy := -1; dy < 2; dy += 1 {
-                for dx := -1; dx < 2; dx += 1 {
-                    if dx == 0 && dy == 0 { continue; }
-                    ny := y + dy;
-                    nx := x + dx;
+        for dy, dx in (-1..=1).cartesian_product(-1..=1) {
+            if dx == 0 && dy == 0 { continue; }
+            ny, nx := $(y + dy, x + dx);
 
-                    if 0 <= ny && ny < r && 0 <= nx && nx < c && grid[ny][nx] == '@' {
-                        a += 1;
-                    }
-                }
+            if 0 <= ny && ny < r && 0 <= nx && nx < c 
+                && grid[ny][nx] == '@' 
+            {
+                a += 1;
             }
+        }
 
-            n[y * c + x] = a;
+        n[y * c + x] = a;
 
-            if a < 4 {
-                dq.push_back(pack(y, x));
-                parts[0] += 1;
-            }
+        if a < 4 {
+            dq.push_back($(y, x));
+            parts[0] += 1;
         }
     }
 
     while !dq.is_empty() {
-        y, x := unpack(dq.pop_front().unwrap());
+        y, x := dq.pop_front().unwrap();
         if grid[y][x] != '@' || n[y * c + x] >= 4 { continue; }
 
         grid[y][x] = '.';
         parts[1] += 1;
 
-        for dy := -1; dy < 2; dy += 1 {
-            for dx := -1; dx < 2; dx += 1 {
-                if dx == 0 && dy == 0 { continue; }
-                ny := y + dy;
-                nx := x + dx;
+        for dy, dx in (-1..=1).cartesian_product(-1..=1) {
+            if dx == 0 && dy == 0 { continue; }
+            ny, nx := $(y + dy, x + dx);
 
-                if 0 <= ny && ny < r && 0 <= nx && nx < c && grid[ny][nx] == '@' {
-                    n[ny * c + nx] -= 1;
-                    if n[ny * c + nx] == 3 { dq.push_back(pack(ny, nx)); }
-                }
+            if 0 <= ny && ny < r && 0 <= nx && nx < c 
+                && grid[ny][nx] == '@' 
+            {
+                n[ny * c + nx] -= 1;
+                if n[ny * c + nx] == 3 { dq.push_back($(ny, nx)); }
             }
         }
     }
