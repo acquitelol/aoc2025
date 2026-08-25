@@ -4,7 +4,7 @@ let grid: string[];
 let width: u64;
 
 fn solve(string[] lines) {
-    sep := (0..width).map(fn(c) grid.iter().all_with(fn(r, c) r[c] == ' ', c)).collect();
+    sep := (0..width).map(fn: grid.iter().all_with(fn(r, c) r[c] == ' ', it)).collect();
     ranges := [](i64, i64);
     i64[2] total = #[0, 0];
 
@@ -44,7 +44,7 @@ fn solve(string[] lines) {
 
 fn main(string[] args) {
     lines := io::read_to_string(args[1]).split("\n");
-    width = lines.iter().map(fn(l) l.len()).max().unwrap();
-    grid = lines.map(fn(l) l.pad_left(width));
+    width = lines.iter().map(fn: it.len()).max().unwrap();
+    grid = lines.map(fn: it.pad_left(width));
     $dbg(solve(lines));
 }

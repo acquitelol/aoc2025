@@ -21,7 +21,7 @@ fn Array::unsorted(i64[2][] self, i64 low, i64 high) {
 
 fn solve(string[] lines, bool p2) {
     split := lines.iter().position(fn(l) l == "").unwrap();
-    ranges := lines.slice(0, split).map(fn(line) line.split("-").map(i64::parse));
+    ranges := lines.slice(0, split).map(fn: it.split("-").map(i64::parse));
     i64 total = 0;
 
     if p2 {

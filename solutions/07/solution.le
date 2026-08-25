@@ -1,7 +1,7 @@
 use std/prelude;
 
 fn solve(string[] grid) {
-    i64 sc = grid[0].iter().position(fn(c) c == 'S').unwrap();
+    i64 sc = grid[0].iter().position(fn: it == 'S').unwrap();
     i64 splits = 0;
     ways := $map(#[$(sc, #cast(i64, 1))]);
 

@@ -16,7 +16,7 @@ fn unite(i64[] parent, i64 a, i64 b) -> bool {
 }
 
 fn solve(string[] lines) {
-    boxes := lines.map(fn(l) l.split(",").map(i64::parse));
+    boxes := lines.map(fn: it.split(",").map(i64::parse));
     circuits := (#cast(i64, 0)..boxes.len()).collect();
     i64[2] total = #[0, 0];
 
@@ -44,8 +44,8 @@ fn solve(string[] lines) {
                 counts[root] = counts.get(root).unwrap_or(0) + 1;
             }
 
-            largest := counts.iter().collect().sort_with(fn(a, b) b.y - a.y).slice(0, 3);
-            total[0] = largest.iter().map(fn(c) c.y).product();
+            largest := counts.iter().collect().sort_with(fn: x1.y - x0.y).slice(0, 3);
+            total[0] = largest.iter().map(fn: it.y).product();
         }
 
         if unite(circuits, d1, d2) {

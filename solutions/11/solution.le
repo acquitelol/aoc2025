@@ -1,7 +1,7 @@
 use std/prelude;
 
 let cache = HashMap::new<(string, string), i64>();
-let graph = DefaultMap::new<string>(fn() HashSet::new<string>());
+let graph = DefaultMap::new<string>(fn: HashSet::new<string>());
 
 fn dp(string start, string end) -> i64 {
     if graph[start].contains(end) { return 1; }

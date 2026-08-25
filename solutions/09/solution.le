@@ -24,7 +24,7 @@ fn solve(string[] lines) {
         ];
     }
 
-    edges.sort_with(fn(a, b) a[0] - b[0]);
+    edges.sort_with(fn: x0[0] - x1[0]);
 
     for i := 0; i < tiles.len(); i += 1 {
         for j := 0; j < tiles.len(); j += 1 {
