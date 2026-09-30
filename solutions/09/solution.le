@@ -14,7 +14,7 @@ fn contained(i64[4][] edges, i64[2] mx, i64[2] my) {
 fn solve(string[] lines) {
     tiles := lines.map(fn(l) l.split(",").map(i64::parse));
     edges := Array::with_capacity<i64[4]>(tiles.len()).filled();
-    i64[2] best = #[0, 0];
+    best: i64[2] = #[0, 0];
 
     for i := 0; i < tiles.len(); i += 1 {
         px, py := #[tiles[i], tiles[(i + 1) % tiles.len()]];

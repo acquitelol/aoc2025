@@ -30,7 +30,7 @@ fn solve(string[] grid) {
     }
 
     while !dq.is_empty() {
-        y, x := dq.pop_front().unwrap();
+        y, x := dq.pop_front()!;
         if grid[y][x] != '@' || n[y * c + x] >= 4 { continue; }
 
         grid[y][x] = '.';

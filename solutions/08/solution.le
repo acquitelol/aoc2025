@@ -18,7 +18,7 @@ fn unite(i64[] parent, i64 a, i64 b) -> bool {
 fn solve(string[] lines) {
     boxes := lines.map(fn: it.split(",").map(i64::parse));
     circuits := (#cast(i64, 0)..boxes.len()).collect();
-    i64[2] total = #[0, 0];
+    total: i64[2] = #[0, 0];
 
     dists := MinHeap::new<(f32, u64, u64)>(fn(a, b) a.x - b.x);
     bdist := f32::inf;

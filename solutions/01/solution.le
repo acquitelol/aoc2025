@@ -5,7 +5,7 @@ fn solve(string[] lines, bool p2) {
     hits := 0;
 
     for line in lines.map(string::iter) {
-        way := line.next().unwrap();
+        way := line.next()!;
         step := i32::parse(line.collect().join(""));
 
         for _ in 0..(p2 ? step : 1) {

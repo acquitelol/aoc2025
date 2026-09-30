@@ -4,7 +4,7 @@ use part1;
 use part2;
 
 fn solve(string[] lines) {
-    i32[2] total = #[0, 0];
+    total: i32[2] = #[0, 0];
 
     for i, line in lines.iter().enumerate() {
         diagram, rest := line.split("]");

@@ -20,9 +20,9 @@ fn Array::unsorted(i64[2][] self, i64 low, i64 high) {
 }
 
 fn solve(string[] lines, bool p2) {
-    split := lines.iter().position(fn(l) l == "").unwrap();
+    split := lines.iter().position(fn(l) l == "")!;
     ranges := lines.slice(0, split).map(fn: it.split("-").map(i64::parse));
-    i64 total = 0;
+    total: i64 = 0;
 
     if p2 {
         merged := []i64[2];
@@ -31,7 +31,7 @@ fn solve(string[] lines, bool p2) {
             merged.unsorted(low, high);
         }
 
-        total = merged.map(fn(x) x[1] - x[0] + 1).sum();
+        total = merged.map(fn: it[1] - it[0] + 1).sum();
     } else {
         ids := lines.slice(split + 1, lines.len()).map(i64::parse);
 
