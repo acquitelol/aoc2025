@@ -4,9 +4,7 @@ fn is_twice(i64 x) {
     d := 1 + #cast(i64, math::floorf(math::log10f(x)));
     if d % 2 != 0 { return false; }
 
-    p := 1;
-    for i := 0; i < d / 2; i += 1 { p *= 10; }
-
+    p := (0..d / 2).fold(1, fn: it * 10);
     return x / p == x % p;
 }
 
@@ -43,9 +41,7 @@ fn is_repeat(i64 x) {
 fn solve(string[] parts, bool p2) {
     total: i64 = 0;
 
-    for item in parts {
-        start, end := item.split("-").map(i64::parse);
-
+    for start, end in parts.map(fn: it.nums_by<i64>([])) {
         while start <= end {
             if p2 ? is_repeat(start) : is_twice(start) {
                 total += start;
